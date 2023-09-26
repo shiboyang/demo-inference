@@ -86,12 +86,12 @@ def wrap_detection(input_image, output_data):
     return result_class_ids, result_confidences, result_boxes
 
 
-def trt_inference():
+def trt_inference(label_path, video_path):
     """
     TensorRT Inference API
     :return:
     """
-    classes = load_classes("./uav_bird.txt")
+    classes = load_classes(label_path)
     device = torch.device("cuda:0")
     Binding = namedtuple("Binding", ("name", "dtype", "shape", "data", "ptr"))
     bindings = OrderedDict()
@@ -108,7 +108,7 @@ def trt_inference():
     binding_address = OrderedDict((n, d.ptr) for n, d in bindings.items())
     trt_context = model.create_execution_context()
 
-    capture = cv2.VideoCapture("./bird.mp4")
+    capture = cv2.VideoCapture(video_path)
     colors = [(255, 255, 0), (0, 255, 0), (0, 255, 255), (255, 0, 0)]
 
     while True:
@@ -143,7 +143,9 @@ def trt_inference():
 
 
 def main():
-    trt_inference()
+    label_path = "../example/uav_bird.txt"
+    video_path = "../example/bird.mp4"
+    trt_inference(label_path, video_path)
 
 
 if __name__ == '__main__':
