@@ -42,6 +42,7 @@ def image_preprocess(img: np.ndarray) -> np.ndarray:
 
 
 def wrap_detection(input_image, output_data):
+    # todo use C implemented NMS instead of cv.dnn.NMS
     class_ids = []
     confidences = []
     boxes = []
@@ -86,7 +87,7 @@ def wrap_detection(input_image, output_data):
     return result_class_ids, result_confidences, result_boxes
 
 
-def trt_inference(label_path, video_path):
+def trt_inference(label_path, video_path, engine_file):
     """
     TensorRT Inference API
     :return:
@@ -96,7 +97,7 @@ def trt_inference(label_path, video_path):
     Binding = namedtuple("Binding", ("name", "dtype", "shape", "data", "ptr"))
     bindings = OrderedDict()
     trt_logger = trt.Logger(trt.Logger.INFO)
-    with open("../uav_bird.engine", "rb") as f, trt.Runtime(trt_logger) as runtime:
+    with open(engine_file, "rb") as f, trt.Runtime(trt_logger) as runtime:
         model = runtime.deserialize_cuda_engine(f.read())
     for i in range(model.num_bindings):
         name = model.get_tensor_name(i)
@@ -145,7 +146,8 @@ def trt_inference(label_path, video_path):
 def main():
     label_path = "../example/uav_bird.txt"
     video_path = "../example/bird.mp4"
-    trt_inference(label_path, video_path)
+    engine_file = "../uav_bird.engine"
+    trt_inference(label_path, video_path, engine_file)
 
 
 if __name__ == '__main__':
