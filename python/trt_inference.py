@@ -146,7 +146,7 @@ def trt_inference(label_path, video_path, engine_file):
 def main():
     label_path = "../example/uav_bird.txt"
     video_path = "../example/bird.mp4"
-    engine_file = "../uav_bird.engine"
+    engine_file = "../asset/uav_bird_fp16.engine"
     trt_inference(label_path, video_path, engine_file)
 
 
